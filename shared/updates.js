@@ -242,10 +242,7 @@ class Updates {
     this.first = null;
     this.timer = null;
     if (this.self && this.self.check) this.self.check().then(() => this._set({ canInstall: !!this.self.kind }), () => {});
-    if (this.cfg.auto === false) return;
-    this.first = setTimeout(() => this.check(false), FIRST_DELAY);
-    this.timer = setInterval(() => this.check(false), EVERY);
-    if (this.timer.unref) this.timer.unref();
+    // Private fork: never schedule automatic update checks against the upstream repo.
   }
 
   // Skip a specific release so automatic updates don't nag the user again for it.
@@ -270,6 +267,8 @@ class Updates {
   }
 
   async check(manual = true) {
+    // Private fork: updates disabled; never reach out to the upstream repo.
+    return this._set({ checking: false, error: '' });
     if (this.store || this.status.checking) return;
     this._set({ checking: true, error: '', promptUpdate: false });
     try {
